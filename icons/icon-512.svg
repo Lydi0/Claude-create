@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" rx="108" fill="#1a1a2e"/>
+  <g transform="translate(256,235)">
+    <!-- Microphone body -->
+    <rect x="-52" y="-106" width="104" height="180" rx="52" fill="#e94560"/>
+    <!-- Microphone arc -->
+    <path d="M-84,26 a84,84 0 0,0 168,0" fill="none" stroke="#e94560" stroke-width="13" stroke-linecap="round"/>
+    <!-- Microphone stand -->
+    <line x1="0" y1="110" x2="0" y2="152" stroke="#e94560" stroke-width="13" stroke-linecap="round"/>
+    <line x1="-42" y1="152" x2="42" y2="152" stroke="#e94560" stroke-width="13" stroke-linecap="round"/>
+  </g>
+  <!-- Pulse rings -->
+  <circle cx="256" cy="235" r="158" fill="none" stroke="#e94560" stroke-width="4" opacity="0.3"/>
+  <circle cx="256" cy="235" r="200" fill="none" stroke="#e94560" stroke-width="2.5" opacity="0.15"/>
+</svg>

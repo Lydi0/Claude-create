@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#1a1a2e">
+
+  <!-- iOS Safari PWA -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="记忆助手">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+
+  <link rel="stylesheet" href="styles.css">
+  <title>语音记忆助手</title>
+</head>
+<body>
+  <div id="app">
+    <!-- iOS 状态栏占位 -->
+    <div class="status-bar-spacer"></div>
+
+    <!-- ========== 语音主页 ========== -->
+    <section id="view-voice" class="view active">
+      <header class="view-header">
+        <h1>语音记忆</h1>
+      </header>
+
+      <div class="voice-container">
+        <!-- 状态指示 -->
+        <div id="voice-status" class="voice-status">点击麦克风开始对话</div>
+
+        <!-- 麦克风按钮 -->
+        <button id="mic-btn" class="mic-button" aria-label="录音">
+          <svg class="mic-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="9" y="2" width="6" height="12" rx="3"/>
+            <path d="M5 10a7 7 0 0 0 14 0"/>
+            <line x1="12" y1="17" x2="12" y2="21"/>
+            <line x1="8" y1="21" x2="16" y2="21"/>
+          </svg>
+          <div class="mic-pulse"></div>
+          <div class="mic-pulse mic-pulse-2"></div>
+        </button>
+
+        <!-- 对话区域 -->
+        <div id="conversation" class="conversation">
+          <div class="conversation-placeholder">
+            <p>你的记忆助手已准备就绪</p>
+            <p class="hint">说"记住..."来存储记忆<br>或直接提问来检索</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== 记忆列表页 ========== -->
+    <section id="view-memories" class="view">
+      <header class="view-header">
+        <h1>我的记忆</h1>
+        <button id="add-memory-btn" class="header-btn" aria-label="添加记忆">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"/>
+            <line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+        </button>
+      </header>
+
+      <!-- 搜索栏 -->
+      <div class="search-bar">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input type="text" id="search-input" placeholder="搜索记忆..." autocomplete="off">
+      </div>
+
+      <!-- 类别筛选 -->
+      <div class="category-tabs">
+        <button class="cat-tab active" data-category="all">全部</button>
+        <button class="cat-tab" data-category="对话">对话</button>
+        <button class="cat-tab" data-category="工作">工作</button>
+        <button class="cat-tab" data-category="思考">思考</button>
+        <button class="cat-tab" data-category="哲思">哲思</button>
+        <button class="cat-tab" data-category="笔记">笔记</button>
+      </div>
+
+      <!-- 记忆列表 -->
+      <div id="memory-list" class="memory-list">
+        <div class="empty-state">
+          <p>还没有记忆</p>
+          <p class="hint">去语音页面说点什么吧</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== 设置页 ========== -->
+    <section id="view-settings" class="view">
+      <header class="view-header">
+        <h1>设置</h1>
+      </header>
+
+      <div class="settings-content">
+        <!-- API Keys -->
+        <div class="settings-group">
+          <h2 class="settings-title">API 密钥</h2>
+
+          <div class="setting-item">
+            <label for="openai-key">OpenAI API Key</label>
+            <p class="setting-desc">用于语音转文字 (Whisper)</p>
+            <div class="key-input-wrapper">
+              <input type="password" id="openai-key" placeholder="sk-..." autocomplete="off">
+              <button class="toggle-key-btn" data-target="openai-key" aria-label="显示/隐藏">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="setting-item">
+            <label for="anthropic-key">Anthropic API Key</label>
+            <p class="setting-desc">用于 Claude 智能检索</p>
+            <div class="key-input-wrapper">
+              <input type="password" id="anthropic-key" placeholder="sk-ant-..." autocomplete="off">
+              <button class="toggle-key-btn" data-target="anthropic-key" aria-label="显示/隐藏">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <button id="save-keys-btn" class="primary-btn">保存密钥</button>
+
+          <div class="api-guide">
+            <h3>如何获取 API Key？</h3>
+            <div class="guide-step">
+              <strong>OpenAI：</strong>访问
+              <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener">platform.openai.com/api-keys</a>
+              → 创建新的 API Key
+            </div>
+            <div class="guide-step">
+              <strong>Anthropic：</strong>访问
+              <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener">console.anthropic.com</a>
+              → Settings → API Keys → Create Key
+            </div>
+          </div>
+        </div>
+
+        <!-- 语音设置 -->
+        <div class="settings-group">
+          <h2 class="settings-title">语音设置</h2>
+          <div class="setting-item">
+            <label for="voice-select">朗读语音</label>
+            <select id="voice-select">
+              <option value="">系统默认</option>
+            </select>
+          </div>
+          <div class="setting-item">
+            <label>自动朗读回复</label>
+            <label class="switch">
+              <input type="checkbox" id="auto-speak" checked>
+              <span class="switch-slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <!-- 主题 -->
+        <div class="settings-group">
+          <h2 class="settings-title">外观</h2>
+          <div class="setting-item">
+            <label for="theme-select">主题</label>
+            <select id="theme-select">
+              <option value="auto">跟随系统</option>
+              <option value="dark">深色</option>
+              <option value="light">浅色</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- 数据管理 -->
+        <div class="settings-group">
+          <h2 class="settings-title">数据管理</h2>
+          <div class="setting-item">
+            <label id="memory-count">已存储 0 条记忆</label>
+            <p class="setting-desc" id="storage-info"></p>
+          </div>
+          <div class="data-buttons">
+            <button id="export-btn" class="secondary-btn">导出记忆</button>
+            <button id="import-btn" class="secondary-btn">导入记忆</button>
+          </div>
+          <input type="file" id="import-file" accept=".json" hidden>
+        </div>
+
+        <!-- 版本信息 -->
+        <div class="settings-group">
+          <p class="version-info">语音记忆助手 v1.0.0</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== 底部 Tab 栏 ========== -->
+    <nav id="tab-bar">
+      <button class="tab active" data-view="voice" aria-label="语音">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="9" y="2" width="6" height="12" rx="3"/>
+          <path d="M5 10a7 7 0 0 0 14 0"/>
+          <line x1="12" y1="17" x2="12" y2="21"/>
+        </svg>
+        <span>语音</span>
+      </button>
+      <button class="tab" data-view="memories" aria-label="记忆">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+          <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+        </svg>
+        <span>记忆</span>
+      </button>
+      <button class="tab" data-view="settings" aria-label="设置">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+        <span>设置</span>
+      </button>
+    </nav>
+
+    <!-- ========== iOS 安装引导 ========== -->
+    <div id="install-prompt" class="overlay hidden">
+      <div class="install-card">
+        <h2>添加到主屏幕</h2>
+        <p>将此应用添加到主屏幕，获得更好的体验</p>
+        <div class="install-steps">
+          <div class="install-step">
+            <span class="step-num">1</span>
+            <span>点击 Safari 底部的 <strong>分享按钮</strong>
+              <svg class="inline-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
+                <polyline points="16 6 12 2 8 6"/>
+                <line x1="12" y1="2" x2="12" y2="15"/>
+              </svg>
+            </span>
+          </div>
+          <div class="install-step">
+            <span class="step-num">2</span>
+            <span>向下滚动，选择 <strong>"添加到主屏幕"</strong></span>
+          </div>
+          <div class="install-step">
+            <span class="step-num">3</span>
+            <span>点击右上角 <strong>"添加"</strong></span>
+          </div>
+        </div>
+        <button id="dismiss-install" class="primary-btn">我知道了</button>
+      </div>
+    </div>
+
+    <!-- ========== 添加记忆弹窗 ========== -->
+    <div id="add-memory-modal" class="overlay hidden">
+      <div class="modal-card">
+        <h2>添加记忆</h2>
+        <textarea id="new-memory-text" placeholder="写下你想记住的内容..." rows="4"></textarea>
+        <div class="category-select">
+          <label>类别：</label>
+          <select id="new-memory-category">
+            <option value="笔记">笔记</option>
+            <option value="对话">对话</option>
+            <option value="工作">工作</option>
+            <option value="思考">思考</option>
+            <option value="哲思">哲思</option>
+          </select>
+        </div>
+        <div class="modal-actions">
+          <button id="cancel-add-memory" class="secondary-btn">取消</button>
+          <button id="confirm-add-memory" class="primary-btn">保存</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== 记忆详情弹窗 ========== -->
+    <div id="memory-detail-modal" class="overlay hidden">
+      <div class="modal-card">
+        <div class="detail-header">
+          <h2 id="detail-category" class="category-badge"></h2>
+          <span id="detail-date" class="detail-date"></span>
+        </div>
+        <p id="detail-content" class="detail-content"></p>
+        <div class="modal-actions">
+          <button id="delete-memory-btn" class="danger-btn">删除</button>
+          <button id="close-detail-btn" class="secondary-btn">关闭</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== Toast 通知 ========== -->
+    <div id="toast" class="toast hidden"></div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
