@@ -1065,9 +1065,6 @@
         document.getElementById("main").classList.remove("active");
         document.getElementById("splash").classList.add("active");
       });
-    } else {
-      // Hide Google login if Firebase not configured
-      document.getElementById("googleLoginBtn").style.display = "none";
     }
 
     document.getElementById("guestBtn").addEventListener("click", () => showMain());
