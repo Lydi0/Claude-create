@@ -391,7 +391,7 @@
       fbApp = initializeApp(firebaseConfig);
       fbAuth = getAuth(fbApp);
       fbDb = getFirestore(fbApp);
-      firebaseEnabled = (firebaseConfig.apiKey !== "YOUR_API_KEY");
+      firebaseEnabled = true;
     } catch(e) {
       console.warn("Firebase init failed, using local mode", e);
     }
